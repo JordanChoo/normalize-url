@@ -56,17 +56,10 @@ function normalizeURL($url)
 
 	if(isset($url['path']))
 	{
-		// Case normalization
-		$url['path'] = preg_replace('/(%([0-9abcdef][0-9abcdef]))/ex', "'%'.strtoupper('\\2')", $url['path']);
-		//Strip duplicate slashes
-		while(preg_match("/\/\//", $url['path']))
-			$url['path'] = preg_replace("/\/\//", "/", $url['path']);
-
 		/*
 		 * Decode unreserved characters, http://www.apps.ietf.org/rfc/rfc3986.html#sec-2.3
 		 * Heavily rewritten version of urlDecodeUnreservedChars() in Glen Scott's url-normalizer.
 		 */
-
 		$u = array();
 		for ($o = 65; $o <= 90; $o++)
 			$u[] = dechex($o);
@@ -79,6 +72,8 @@ function normalizeURL($url)
 			$u[] = dechex(ord($chr));
 		$url['path'] = preg_replace_callback(array_map(create_function('$str', 'return "/%" . strtoupper($str) . "/x";'), $u),
 	                                                   create_function('$matches', 'return chr(hexdec($matches[0]));'), $url['path']);
+	    // make everything lower case
+	    $url['path'] = strtolower($url['path']);
 	    // Remove directory index
 		$defaultIndexes = array("/default\.aspx/" => "default.aspx", "/default\.asp/"  => "default.asp",
 	                            "/index\.html/"   => "index.html",   "/index\.htm/"    => "index.htm",
@@ -89,7 +84,10 @@ function normalizeURL($url)
 			if(preg_match($index, $url['path']))
 				$url['path'] = str_replace($strip, "", $url['path']);
 		}
-	
+		//Strip duplicate slashes
+		while(preg_match("/\/\//", $url['path']))
+			$url['path'] = preg_replace("/\/\//", "/", $url['path']);
+
 	    /**
 	     * Path segment normalization, http://www.apps.ietf.org/rfc/rfc3986.html#sec-5.2.4
 	     * Heavily rewritten version of removeDotSegments() in Glen Scott's url-normalizer.
@@ -119,7 +117,13 @@ function normalizeURL($url)
 				}
 			}
 		}
+
 		$newUrl .= $new_path;
+		// Always remove trailing slash
+		if(substr($newUrl, -1) == "/")
+		{
+			$newUrl = substr_replace($newUrl ,"",-1);;
+		}
 	}
 	
 	if(isset($url['fragment']))

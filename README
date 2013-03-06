@@ -12,3 +12,8 @@ Supports
 - Removal of default directory index files
 - Removal of dot segments in URL path
 - Sorting GET params alphabetically
+
+Added
+
+- Always remove trailing slash in path segment of the URL
+- All URLs are now forced lowercase 
