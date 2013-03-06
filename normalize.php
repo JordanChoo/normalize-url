@@ -24,7 +24,7 @@ class UrlNormalize
 * THE SOFTWARE.
 */
 
-	public function normalizeURL($url)
+	public static function normalizeURL($url)
 	{
 		$newUrl = "";
 		$url = parse_url($url);	

@@ -25,7 +25,6 @@ function normalizeURL($url)
 {
 	$newUrl = "";
 	$url = parse_url($url);	
-	var_dump($url);
 	$defaultSchemes = array("http" => 80, "https" => 443);
 
 	if(isset($url['scheme']))
